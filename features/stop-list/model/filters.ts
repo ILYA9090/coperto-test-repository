@@ -1,4 +1,4 @@
-import type { Shop } from "@/types/menu";
+import type { MenuItem, Shop } from "@/types/menu";
 
 export type StatusFilter = "available" | "stopped";
 
@@ -10,14 +10,14 @@ export interface MenuFilters {
 const VALID_SHOPS = ["kitchen", "bar", "pastry"] as const;
 const VALID_STATUSES = ["available", "stopped"] as const;
 
-function isShop(value: unknown): value is Shop {
+export function isShop(value: unknown): value is Shop {
   return (
     typeof value === "string" &&
     (VALID_SHOPS as readonly string[]).includes(value)
   );
 }
 
-function isStatusFilter(value: unknown): value is StatusFilter {
+export function isStatusFilter(value: unknown): value is StatusFilter {
   return (
     typeof value === "string" &&
     (VALID_STATUSES as readonly string[]).includes(value)
@@ -42,4 +42,16 @@ export function filtersToSearchParams(filters: MenuFilters): URLSearchParams {
   if (filters.status !== null) params.set("status", filters.status);
   params.sort();
   return params;
+}
+
+export function filterMenuItems(
+  items: MenuItem[],
+  filters: MenuFilters,
+): MenuItem[] {
+  return items.filter((item) => {
+    if (filters.shop !== null && item.shop !== filters.shop) return false;
+    if (filters.status !== null && item.status.kind !== filters.status)
+      return false;
+    return true;
+  });
 }
