@@ -2,28 +2,9 @@
 
 import { Badge } from "@/shared/ui/Badge";
 import { Button } from "@/shared/ui/Button";
-import type { MenuItem, StopReason } from "@/types/menu";
-
-const SHOP_LABELS: Record<MenuItem["shop"], string> = {
-  kitchen: "Кухня",
-  bar: "Бар",
-  pastry: "Кондитерская",
-};
-
-const REASON_LABELS: Record<StopReason, string> = {
-  out_of_stock: "Закончились продукты",
-  equipment: "Сломалось оборудование",
-  quality: "Вопросы к качеству",
-  menu_change: "Снято с меню",
-};
-
-function formatUntil(until: string | null): string {
-  if (until === null) return "до конца смены";
-  return new Date(until).toLocaleTimeString("ru-RU", {
-    hour: "2-digit",
-    minute: "2-digit",
-  });
-}
+import { SHOP_LABELS, REASON_LABELS } from "../model/labels";
+import { formatUntil } from "../model/format";
+import type { MenuItem } from "@/types/menu";
 
 interface StopListTableProps {
   items: MenuItem[];
@@ -46,7 +27,9 @@ export function StopListTable({
           <th className="py-2 pr-4 font-medium">Цех</th>
           <th className="py-2 pr-4 font-medium">Остаток</th>
           <th className="py-2 pr-4 font-medium">Статус</th>
-          <th className="py-2 pr-4 font-medium" />
+          <th className="py-2 pr-4 font-medium">
+            <span className="sr-only">Действия</span>
+          </th>
         </tr>
       </thead>
       <tbody>
@@ -64,12 +47,10 @@ export function StopListTable({
               <td className="py-3 pr-4">{SHOP_LABELS[item.shop]}</td>
               <td className="py-3 pr-4">{item.stock}</td>
               <td className="py-3 pr-4">
-                {status.kind === "stopped" ? (
+                {status.kind === "stopped" && (
                   <Badge variant="stopped">
                     {REASON_LABELS[status.reason]} · {formatUntil(status.until)}
                   </Badge>
-                ) : (
-                  <Badge variant="neutral">В продаже</Badge>
                 )}
                 {isPending && (
                   <span className="ml-2 text-xs text-foreground/40">
@@ -79,19 +60,22 @@ export function StopListTable({
               </td>
               <td className="py-3 pr-4 text-right">
                 {status.kind === "stopped" ? (
-                  <Button
-                    variant="secondary"
-                    isLoading={isPending}
-                    disabled={cannotResume}
+                  <span
                     title={
                       cannotResume
                         ? "Нельзя вернуть в продажу: остаток равен нулю"
                         : undefined
                     }
-                    onClick={() => onResumeClick(item)}
                   >
-                    Вернуть в продажу
-                  </Button>
+                    <Button
+                      variant="secondary"
+                      isLoading={isPending}
+                      disabled={cannotResume}
+                      onClick={() => onResumeClick(item)}
+                    >
+                      Вернуть в продажу
+                    </Button>
+                  </span>
                 ) : (
                   <Button
                     variant="primary"
