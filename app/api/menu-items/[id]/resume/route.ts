@@ -1,9 +1,6 @@
 import { NextResponse } from "next/server";
 import { resumeMenuItem } from "@/server/menu-store";
-
-function delay(ms: number) {
-  return new Promise((resolve) => setTimeout(resolve, ms));
-}
+import { simulateMutation } from "@/server/simulate";
 
 export async function POST(
   _request: Request,
@@ -11,24 +8,27 @@ export async function POST(
 ) {
   const { id } = await params;
 
-  await delay(600);
-
-  if (Math.random() < 0.2) {
-    return NextResponse.json(
-      { error: "Не удалось вернуть позицию в продажу" },
-      { status: 500 },
-    );
+  try {
+    await simulateMutation();
+  } catch (e) {
+    return NextResponse.json({ error: (e as Error).message }, { status: 500 });
   }
 
   const result = resumeMenuItem(id);
 
   if (!result.ok) {
-    const status = result.reason === "not_found" ? 404 : 409;
-    const message =
-      result.reason === "not_found"
-        ? "Позиция не найдена"
-        : "Нельзя вернуть в продажу: остаток равен нулю";
-    return NextResponse.json({ error: message }, { status });
+    switch (result.reason) {
+      case "not_found":
+        return NextResponse.json(
+          { error: "Позиция не найдена" },
+          { status: 404 },
+        );
+      case "out_of_stock":
+        return NextResponse.json(
+          { error: "Нельзя вернуть в продажу: остаток равен нулю" },
+          { status: 409 },
+        );
+    }
   }
 
   return NextResponse.json(result.item);

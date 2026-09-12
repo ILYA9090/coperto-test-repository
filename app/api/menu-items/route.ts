@@ -1,12 +1,14 @@
 import { NextResponse } from "next/server";
 import { getMenuItems } from "@/server/menu-store";
 
+const LIST_DELAY_MS = 600;
+
 function delay(ms: number) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
 export async function GET(request: Request) {
-  await delay(400 + Math.random() * 400);
+  await delay(LIST_DELAY_MS);
 
   const { searchParams } = new URL(request.url);
   const simulate = searchParams.get("simulate");
