@@ -1,3 +1,4 @@
+// features/stop-list/ui/Filters.tsx
 "use client";
 
 import { useRouter, usePathname } from "next/navigation";
@@ -7,16 +8,17 @@ import {
   isShop,
   isStatusFilter,
 } from "../model/filters";
-import type { MenuFilters, StatusFilter } from "../model/filters";
-import type { Shop } from "@/types/menu";
+import type { MenuFilters } from "../model/filters";
 
-const SHOP_OPTIONS: { value: Shop; label: string }[] = [
+const SHOP_OPTIONS = [
+  { value: "", label: "Все цеха" },
   { value: "kitchen", label: "Кухня" },
   { value: "bar", label: "Бар" },
   { value: "pastry", label: "Кондитерская" },
 ];
 
-const STATUS_OPTIONS: { value: StatusFilter; label: string }[] = [
+const STATUS_OPTIONS = [
+  { value: "", label: "Все статусы" },
   { value: "available", label: "В продаже" },
   { value: "stopped", label: "В стоп-листе" },
 ];
@@ -35,7 +37,6 @@ export function Filters({ filters }: { filters: MenuFilters }) {
     <div className="flex gap-4">
       <Select
         label="Цех"
-        placeholder="Все цеха"
         value={filters.shop ?? ""}
         options={SHOP_OPTIONS}
         onChange={(e) => {
@@ -48,7 +49,6 @@ export function Filters({ filters }: { filters: MenuFilters }) {
       />
       <Select
         label="Статус"
-        placeholder="Все статусы"
         value={filters.status ?? ""}
         options={STATUS_OPTIONS}
         onChange={(e) => {
