@@ -1,8 +1,10 @@
 "use client";
 
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutationState } from "@tanstack/react-query";
 import { menuItemsQueryOptions } from "../model/queries";
 import { filterMenuItems } from "../model/filters";
+import { useResumeItem } from "../model/use-stop-item";
+import { useStopPanelStore } from "../model/stop-panel-store";
 import type { MenuFilters } from "../model/filters";
 import type { MenuItem } from "@/types/menu";
 import { Filters } from "./Filters";
@@ -26,13 +28,27 @@ function PageShell({
 
 export function StopListPage({ filters }: { filters: MenuFilters }) {
   const { data, isPending, isError, error } = useQuery(menuItemsQueryOptions);
+  const resumeMutation = useResumeItem();
+  const openPanel = useStopPanelStore((s) => s.open);
+
+  const stopPendingIds = useMutationState({
+    filters: { mutationKey: ["stop-item"], status: "pending" },
+    select: (mutation) => (mutation.state.variables as { id: string }).id,
+  });
+
+  const resumePendingIds = useMutationState({
+    filters: { mutationKey: ["resume-item"], status: "pending" },
+    select: (mutation) => mutation.state.variables as string,
+  });
+
+  const pendingIds = new Set([...stopPendingIds, ...resumePendingIds]);
 
   function handleStopClick(item: MenuItem) {
-    console.log("open stop panel for", item.id);
+    openPanel(item.id);
   }
 
   function handleResumeClick(item: MenuItem) {
-    console.log("resume", item.id);
+    resumeMutation.mutate(item.id);
   }
 
   if (isPending) {
@@ -64,7 +80,7 @@ export function StopListPage({ filters }: { filters: MenuFilters }) {
           items={filteredItems}
           onStopClick={handleStopClick}
           onResumeClick={handleResumeClick}
-          pendingIds={new Set()}
+          pendingIds={pendingIds}
         />
       )}
     </PageShell>
