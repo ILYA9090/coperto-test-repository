@@ -9,6 +9,7 @@ import type { MenuFilters } from "../model/filters";
 import type { MenuItem } from "@/types/menu";
 import { Filters } from "./Filters";
 import { StopListTable } from "./StopListTable";
+import { StopReasonPanel } from "./StopReasonPanel";
 
 function PageShell({
   filters,
@@ -47,42 +48,56 @@ export function StopListPage({ filters }: { filters: MenuFilters }) {
     openPanel(item.id);
   }
 
+  function handleEditClick(item: MenuItem) {
+    openPanel(item.id);
+  }
+
   function handleResumeClick(item: MenuItem) {
     resumeMutation.mutate(item.id);
   }
 
   if (isPending) {
     return (
-      <PageShell filters={filters}>
-        <p className="text-foreground/60">Загрузка…</p>
-      </PageShell>
+      <>
+        <PageShell filters={filters}>
+          <p className="text-foreground/60">Загрузка…</p>
+        </PageShell>
+        <StopReasonPanel />
+      </>
     );
   }
 
   if (isError) {
     return (
-      <PageShell filters={filters}>
-        <p className="text-accent">{error.message}</p>
-      </PageShell>
+      <>
+        <PageShell filters={filters}>
+          <p className="text-accent">{error.message}</p>
+        </PageShell>
+        <StopReasonPanel />
+      </>
     );
   }
 
   const filteredItems = filterMenuItems(data, filters);
 
   return (
-    <PageShell filters={filters}>
-      {filteredItems.length === 0 ? (
-        <p className="text-foreground/60">
-          Ничего не найдено по выбранным фильтрам.
-        </p>
-      ) : (
-        <StopListTable
-          items={filteredItems}
-          onStopClick={handleStopClick}
-          onResumeClick={handleResumeClick}
-          pendingIds={pendingIds}
-        />
-      )}
-    </PageShell>
+    <>
+      <PageShell filters={filters}>
+        {filteredItems.length === 0 ? (
+          <p className="text-foreground/60">
+            Ничего не найдено по выбранным фильтрам.
+          </p>
+        ) : (
+          <StopListTable
+            items={filteredItems}
+            onStopClick={handleStopClick}
+            onResumeClick={handleResumeClick}
+            onEditClick={handleEditClick}
+            pendingIds={pendingIds}
+          />
+        )}
+      </PageShell>
+      <StopReasonPanel />
+    </>
   );
 }
