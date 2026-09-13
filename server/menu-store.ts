@@ -110,7 +110,7 @@ const seed: MenuItem[] = [
 let items: MenuItem[] = seed.map((item) => ({ ...item }));
 
 export function getMenuItems(): MenuItem[] {
-  return items;
+  return items.map((item) => ({ ...item }));
 }
 
 export type StopItemResult =
