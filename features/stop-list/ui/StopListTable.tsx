@@ -10,6 +10,7 @@ interface StopListTableProps {
   items: MenuItem[];
   onStopClick: (item: MenuItem) => void;
   onResumeClick: (item: MenuItem) => void;
+  onEditClick: (item: MenuItem) => void;
   pendingIds: ReadonlySet<string>;
 }
 
@@ -17,6 +18,7 @@ export function StopListTable({
   items,
   onStopClick,
   onResumeClick,
+  onEditClick,
   pendingIds,
 }: StopListTableProps) {
   return (
@@ -41,22 +43,31 @@ export function StopListTable({
           return (
             <tr
               key={item.id}
-              className={`border-b border-foreground/5 ${status.kind === "stopped" ? "text-foreground/50" : ""}`}
+              className={`border-b border-foreground/5 transition-colors duration-300 ${status.kind === "stopped" ? "text-foreground/50" : ""}`}
             >
               <td className="py-3 pr-4">{item.title}</td>
               <td className="py-3 pr-4">{SHOP_LABELS[item.shop]}</td>
               <td className="py-3 pr-4">{item.stock}</td>
               <td className="py-3 pr-4">
                 {status.kind === "stopped" && (
-                  <Badge variant="stopped">
-                    {REASON_LABELS[status.reason]} · {formatUntil(status.until)}
-                  </Badge>
+                  <button
+                    type="button"
+                    onClick={() => onEditClick(item)}
+                    className="rounded-full"
+                    aria-label="Изменить причину и срок стопа"
+                  >
+                    <Badge variant="stopped">
+                      {REASON_LABELS[status.reason]} ·{" "}
+                      {formatUntil(status.until)}
+                    </Badge>
+                  </button>
                 )}
-                {isPending && (
-                  <span className="ml-2 text-xs text-foreground/40">
-                    сохраняется…
-                  </span>
-                )}
+                <Badge
+                  variant="neutral"
+                  className={`ml-2 ${isPending ? "" : "invisible"}`}
+                >
+                  сохраняется…
+                </Badge>
               </td>
               <td className="py-3 pr-4 text-right">
                 {status.kind === "stopped" ? (
@@ -72,6 +83,7 @@ export function StopListTable({
                       isLoading={isPending}
                       disabled={cannotResume}
                       onClick={() => onResumeClick(item)}
+                      className="w-44"
                     >
                       Вернуть в продажу
                     </Button>
@@ -81,6 +93,7 @@ export function StopListTable({
                     variant="primary"
                     isLoading={isPending}
                     onClick={() => onStopClick(item)}
+                    className="w-44"
                   >
                     Поставить в стоп
                   </Button>

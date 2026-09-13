@@ -1,4 +1,3 @@
-// features/stop-list/ui/Filters.tsx
 "use client";
 
 import { useRouter, usePathname } from "next/navigation";

@@ -13,15 +13,15 @@ export function ToastViewport() {
   const dismiss = useToastStore((s) => s.dismiss);
 
   return (
-    <div className="fixed bottom-4 right-4 z-50 flex flex-col gap-2">
+    <div className="fixed top-4 right-4 z-50 flex flex-col gap-2">
       <AnimatePresence>
         {toasts.map((toast) => (
           <motion.div
             key={toast.id}
             role="alert"
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: 20 }}
+            exit={{ opacity: 0, y: -20 }}
             className={`flex items-center gap-3 rounded-md px-4 py-3 text-sm shadow-lg ${VARIANT_CLASSES[toast.variant]}`}
           >
             <span>{toast.message}</span>
