@@ -12,13 +12,13 @@ npm run test
 
 ## Слои
 
-Серверные компоненты: `layout.tsx`, `page.tsx`, route handler'ы в `app/api/**`. Всё остальное — клиентское (`'use client'`): формы, мутации, Zustand, фильтры через `next/navigation`. `StopListPage` — клиентская прослойка между серверным `page.tsx` (читает `searchParams`) и `useQuery` (работает только на клиенте)
+Серверные компоненты: `layout.tsx`, `page.tsx`, route handler'ы в `app/api/**`. Всё остальное — клиентское (`'use client'`): формы, мутации, Zustand, фильтры через `next/navigation`. `StopListPage` - клиентская прослойка между серверным `page.tsx` (читает `searchParams`) и `useQuery` (работает только на клиенте)
 
-`server/menu-store.ts` — in-memory хранилище, доступно только route handler'ам. Данные не переживают рестарт serverless-инстанса на Vercel — ожидаемо для мокового API.
+`server/menu-store.ts` - in-memory хранилище, доступно только route handler'ам. Данные не переживают рестарт serverless-инстанса на Vercel потому что моковое API.
 
 ## Архитектурные решения
 
-Фильтрация — на клиенте, не через API: данных мало, `queryKey` не зависит от фильтров, что упрощает оптимистичные обновления (один кэш вместо инвалидации по комбинациям). Мутации возвращают discriminated union (`{ok: true, item} | {ok: false, reason}`) вместо `null`/`throw`, чтобы route handler однозначно мапил причину на HTTP-статус. Zustand хранит только `id` открытой позиции — серверные данные не дублируются.
+Фильтрация на клиенте, не через API: данных мало, `queryKey` не зависит от фильтров, что упрощает оптимистичные обновления (один кэш вместо инвалидации по комбинациям). Мутации возвращают discriminated union (`{ok: true, item} | {ok: false, reason}`) вместо `null`/`throw`, чтобы route handler однозначно мапил причину на HTTP-статус. Zustand хранит только `id` открытой позиции - серверные данные не дублируются.
 
 ## Допущения
 
