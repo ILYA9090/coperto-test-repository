@@ -1,36 +1,30 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Стоп-лист кухни
 
-## Getting Started
+Тестовое задание для Coperto (Middle Frontend Developer). Next.js 16 (App Router), TypeScript strict, TanStack Query, Zustand, Tailwind, React Hook Form + Zod, Framer Motion, Vitest.
 
-First, run the development server:
+## Запуск
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm install
+npm run dev       # http://localhost:3000
+npm run test
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Слои
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+Серверные компоненты: `layout.tsx`, `page.tsx`, route handler'ы в `app/api/**`. Всё остальное — клиентское (`'use client'`): формы, мутации, Zustand, фильтры через `next/navigation`. `StopListPage` — клиентская прослойка между серверным `page.tsx` (читает `searchParams`) и `useQuery` (работает только на клиенте)
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+`server/menu-store.ts` — in-memory хранилище, доступно только route handler'ам. Данные не переживают рестарт serverless-инстанса на Vercel — ожидаемо для мокового API.
 
-## Learn More
+## Архитектурные решения
 
-To learn more about Next.js, take a look at the following resources:
+Фильтрация — на клиенте, не через API: данных мало, `queryKey` не зависит от фильтров, что упрощает оптимистичные обновления (один кэш вместо инвалидации по комбинациям). Мутации возвращают discriminated union (`{ok: true, item} | {ok: false, reason}`) вместо `null`/`throw`, чтобы route handler однозначно мапил причину на HTTP-статус. Zustand хранит только `id` открытой позиции — серверные данные не дублируются.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Допущения
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+- `Button`/`Select`/`Badge`/`Toast` написаны с нуля — не стал использовать ни shadcn/ui, ни react-hot-toast, хотя формальный запрет в ТЗ касается только UI-китов уровня MUI/Ant Design но решил что нужно написать именно свой ui-kit + что бы не тащить лишние зависимости в package.json килобайты в бандл.
 
-## Deploy on Vercel
+## Что доделал бы
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- Тесты на `filterMenuItems`/`validateUntil` и вторую мутацию (`useResumeItem`).
+- Клавиатурная навигация в таблице (стрелки, Enter).
