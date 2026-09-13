@@ -10,6 +10,7 @@ import type { MenuItem } from "@/types/menu";
 import { Filters } from "./Filters";
 import { StopListTable } from "./StopListTable";
 import { StopReasonPanel } from "./StopReasonPanel";
+import { Loader } from "@/shared/ui/Loader";
 
 function PageShell({
   filters,
@@ -60,7 +61,7 @@ export function StopListPage({ filters }: { filters: MenuFilters }) {
     return (
       <>
         <PageShell filters={filters}>
-          <p className="text-foreground/60">Загрузка…</p>
+          <Loader />
         </PageShell>
         <StopReasonPanel />
       </>
