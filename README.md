@@ -14,7 +14,7 @@ npm run test
 
 Серверные компоненты: `layout.tsx`, `page.tsx`, route handler'ы в `app/api/**`. Всё остальное — клиентское (`'use client'`): формы, мутации, Zustand, фильтры через `next/navigation`. `StopListPage` — клиентская прослойка между серверным `page.tsx` (читает `searchParams`) и `useQuery` (работает только на клиенте)
 
-`server/menu-store.ts` — in-memory хранилище, доступно только route handler'ам. Данные не переживают рестарт serverless-инстанса на Vercel — ожидаемо для мокового API.
+`server/menu-store.ts` — in-memory хранилище, доступно только route handler'ам. Данные не переживают рестарт serverless-инстанса на Vercel потому что моковое API.
 
 ## Архитектурные решения
 
