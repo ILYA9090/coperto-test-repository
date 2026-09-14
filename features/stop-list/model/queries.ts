@@ -2,8 +2,7 @@ import { queryOptions } from "@tanstack/react-query";
 import type { MenuItem } from "@/types/menu";
 
 export const menuKeys = {
-  all: ["menu-items"] as const,
-  list: ["menu-items", "list"] as const,
+  list: ["menu-items"] as const,
 };
 
 async function fetchMenuItems(): Promise<MenuItem[]> {

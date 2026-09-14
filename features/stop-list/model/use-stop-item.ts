@@ -76,7 +76,7 @@ export function useStopItem() {
     },
 
     onSettled: () => {
-      queryClient.invalidateQueries({ queryKey: menuKeys.all });
+      queryClient.invalidateQueries({ queryKey: menuKeys.list });
     },
   });
 }
@@ -120,7 +120,7 @@ export function useResumeItem() {
     },
 
     onSettled: () => {
-      queryClient.invalidateQueries({ queryKey: menuKeys.all });
+      queryClient.invalidateQueries({ queryKey: menuKeys.list });
     },
   });
 }
