@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
-import { useForm } from "react-hook-form";
+import { useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { AnimatePresence, motion } from "framer-motion";
 import { useQuery } from "@tanstack/react-query";
@@ -42,7 +42,7 @@ export function StopReasonPanel() {
   const {
     register,
     handleSubmit,
-    watch,
+    control,
     setValue,
     reset,
     formState: { errors },
@@ -52,7 +52,7 @@ export function StopReasonPanel() {
     defaultValues: { reason: "out_of_stock", until: null },
   });
 
-  const untilValue = watch("until");
+  const untilValue = useWatch({ control, name: "until" });
   const untilMode: UntilMode = untilValue === null ? "shift" : "specific";
 
   useEffect(() => {
